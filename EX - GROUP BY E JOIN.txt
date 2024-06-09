@@ -1,0 +1,84 @@
+EX - GROUP BY
+
+1) Contare quanti iscritti ci sono stati ogni anno
+
+ USE db_university
+
+SELECT count(id), enrolment_date 
+FROM students s 
+GROUP BY S.enrolment_date ;
+
+2) Contare gli insegnianti cha hanno l'ufficio nello stesso edificio
+
+SELECT count(id), office_address
+FROM teachers t 
+GROUP BY t.office_address ;
+
+3) Calcolare la media dei voti di ogni appello d'esame
+
+SELECT exam_id, round(avg(vote)) 
+FROM exam_student es 
+GROUP BY exam_id;
+
+4) Contare quanti corsi di laurea ci sono per ogni dipartimento
+
+SELECT count(de.name), de.department_id 
+FROM degrees de
+GROUP BY department_id ;
+
+---------------------------
+
+EX - JOIN
+
+1) Selezionare tutti gli studenti iscritti al corso di laurea in Economia
+
+SELECT s.id, s.name, s.surname, d.name 
+FROM students s 
+INNER JOIN degrees d
+ON s.degree_id = d.id 
+WHERE d.name LIKE 'Corso di Laurea in Economia' ;
+
+2) Selezionare tutti i corsi di laurea magistrale del dipartimento di neuroscienze
+
+SELECT d.name , `level` 
+FROM degrees d 
+inner JOIN departments d2 
+ON d2.id = d.department_id  
+WHERE d.`level` LIKE 'magistrale' AND d2.name LIKE 'dipartimento di neuroscienze'
+
+3) Selezionare tutti i corsi in cui insegna Fulvio Amato (id=44)
+
+SELECT course_id , teacher_id , c.name 
+FROM course_teacher ct 
+INNER JOIN courses c 
+ON ct.teacher_id = c.id
+WHERE ct.teacher_id ='44';
+
+4) Selezionare tutti gli studenti con i dati relativi al corso di laurea a cui sono iscritti e il relativo dipartimento, in ordine alfabetico per cognome e nome
+
+SELECT s.surname , s.name , d.id , d.name AS 'CORSO DI LAUREA', D.`level`, D2.id, d2.name AS 'DIPARTIMENTO'
+FROM students s 
+INNER JOIN degrees d 
+ON s.degree_id = d.id 
+INNER JOIN departments d2 
+ON d2.id = d.department_id 
+ORDER BY S.surname ASC ;
+
+5) Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti
+
+SELECT *
+FROM degrees d 
+INNER JOIN courses c 
+ON c.degree_id = d.id
+LEFT JOIN teachers t 
+ON t.id;
+
+6) Selezionare tutti i docenti che insegnano nel dipartimento di matematica
+
+SELECT T.name , T.surname, D2.name AS 'Nome dipartimento' 
+FROM course_teacher ct
+INNER JOIN courses c ON CT.course_id = C.id
+INNER JOIN degrees d ON D.id = C.degree_id 
+INNER JOIN departments d2 ON D2.id = C.degree_id
+LEFT JOIN teachers t ON t.id
+WHERE D2.name LIKE 'DIPARTIMENTO DI MATEMATICA';
